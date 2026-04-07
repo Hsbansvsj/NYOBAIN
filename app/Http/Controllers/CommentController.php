@@ -7,12 +7,17 @@ use App\Models\Comment;
 
 class CommentController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | SIMPAN KOMENTAR
+    |--------------------------------------------------------------------------
+    */
     public function store(Request $request)
     {
         $request->validate([
-            'post_id' => 'required',
-            'nama' => 'required',
-            'komentar' => 'required'
+            'post_id' => 'required|exists:posts,id',
+            'nama' => 'required|string|max:100',
+            'komentar' => 'required|string'
         ]);
 
         Comment::create([
@@ -21,14 +26,20 @@ class CommentController extends Controller
             'komentar' => $request->komentar
         ]);
 
-        return back()->with('success','Komentar berhasil ditambahkan');
+        return back()->with('success', 'Komentar berhasil ditambahkan');
     }
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | HAPUS KOMENTAR
+    |--------------------------------------------------------------------------
+    */
     public function destroy($id)
     {
         $comment = Comment::findOrFail($id);
         $comment->delete();
 
-        return back()->with('success','Komentar berhasil dihapus');
+        return back()->with('success', 'Komentar berhasil dihapus');
     }
 }

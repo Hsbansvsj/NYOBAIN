@@ -6,10 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
-    protected $fillable = [
-        'nama_kategori'
-    ];
+    protected $fillable = ['nama_kategori'];
 
+    // Relasi ke Post
     public function posts()
     {
         return $this->hasMany(Post::class);

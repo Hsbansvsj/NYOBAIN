@@ -2,53 +2,44 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Post extends Model
 {
     use HasFactory;
 
-    /**
-     * Atribut yang dapat diisi secara massal.
-     * Menambahkan 'gambar' di sini sangat krusial agar upload lewat browser berhasil.
-     */
+    protected $table = 'posts';
+
     protected $fillable = [
-        'judul', 
-        'isi', 
-        'category_id', 
-        'user_id', 
+        'judul',
+        'isi',
+        'category_id',
+        'user_id',
         'gambar'
     ];
 
-    /**
-     * Relasi ke model Category.
-     * Satu artikel memiliki satu kategori.
-     */
-    public function category(): BelongsTo
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONSHIP
+    |--------------------------------------------------------------------------
+    */
+
+    // Relasi ke Category
+    public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
-    /**
-     * Relasi ke model User.
-     * Satu artikel ditulis oleh satu user/admin.
-     */
-    public function user(): BelongsTo
+    // Relasi ke User (penulis)
+    public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
-    
-    /**
-     * Aksesor untuk mempermudah pemanggilan URL gambar di Blade.
-     * Gunakan: $post->image_url
-     */
-    public function getImageUrlAttribute(): string
+
+    // Relasi ke Comment
+    public function comments()
     {
-        if ($this->gambar && file_exists(public_path('uploads/' . $this->gambar))) {
-            return asset('uploads/' . $this->gambar);
-        }
-        return asset('images/no-image.png'); // Sediakan gambar default jika kosong
+        return $this->hasMany(Comment::class, 'post_id')->latest();
     }
 }
