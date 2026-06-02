@@ -3,43 +3,32 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Post extends Model
 {
-    use HasFactory;
-
-    protected $table = 'posts';
-
     protected $fillable = [
+        'user_id',
+        'category_id',
         'judul',
         'isi',
-        'category_id',
-        'user_id',
-        'gambar'
+        'gambar',
+        'status'
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELATIONSHIP
-    |--------------------------------------------------------------------------
-    */
-
-    // Relasi ke Category
-    public function category()
+    /**
+     * Relasi ke Category
+     */
+    public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class);
     }
 
-    // Relasi ke User (penulis)
-    public function user()
+    /**
+     * Relasi ke User
+     */
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
-    // Relasi ke Comment
-    public function comments()
-    {
-        return $this->hasMany(Comment::class, 'post_id')->latest();
+        return $this->belongsTo(User::class);
     }
 }

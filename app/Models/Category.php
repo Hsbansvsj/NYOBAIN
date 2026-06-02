@@ -3,14 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
-    protected $fillable = ['nama_kategori'];
+    protected $fillable = [
+        'nama_kategori'
+    ];
 
-    // Relasi ke Post
-    public function posts()
+    /**
+     * Relasi Category -> Banyak Post
+     */
+    public function posts(): HasMany
     {
-        return $this->hasMany(Post::class);
+        return $this->hasMany(Post::class, 'category_id');
     }
 }

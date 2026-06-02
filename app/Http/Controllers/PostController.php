@@ -28,6 +28,7 @@ class PostController extends Controller
     public function create()
     {
         $categories = Category::all();
+
         return view('posts.create', compact('categories'));
     }
 
@@ -40,6 +41,7 @@ class PostController extends Controller
             'judul'       => 'required|max:255',
             'isi'         => 'required',
             'category_id' => 'required|exists:categories,id',
+            'status'      => 'required',
             'gambar'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -62,7 +64,7 @@ class PostController extends Controller
             $data['gambar'] = $filename;
         }
 
-        // User login (fallback ke 1 kalau belum login)
+        // User login
         $data['user_id'] = Auth::id() ?? 1;
 
         Post::create($data);
@@ -72,7 +74,7 @@ class PostController extends Controller
     }
 
     // =======================
-    // DETAIL (INI YANG ERROR TADI)
+    // DETAIL
     // =======================
     public function show($id)
     {
@@ -88,6 +90,7 @@ class PostController extends Controller
     public function edit($id)
     {
         $post = Post::findOrFail($id);
+
         $categories = Category::all();
 
         return view('posts.edit', compact('post', 'categories'));
@@ -102,13 +105,15 @@ class PostController extends Controller
             'judul'       => 'required|max:255',
             'isi'         => 'required',
             'category_id' => 'required|exists:categories,id',
+            'status'      => 'required',
             'gambar'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $post = Post::findOrFail($id);
+
         $data = $request->except('gambar');
 
-        // Jika upload gambar baru
+        // Upload gambar baru
         if ($request->hasFile('gambar')) {
 
             // Hapus gambar lama
@@ -117,6 +122,7 @@ class PostController extends Controller
             }
 
             $file = $request->file('gambar');
+
             $filename = time() . '_' . $file->getClientOriginalName();
 
             $file->move(public_path('uploads'), $filename);

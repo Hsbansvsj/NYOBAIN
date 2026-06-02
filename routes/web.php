@@ -1,69 +1,61 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CommentController;
+use App\Http\Controllers\{
+    AuthController,
+    PostController,
+    CategoryController,
+    DashboardController,
+    CommentController,
+    HomeController
+};
 
 /*
 |--------------------------------------------------------------------------
-| Redirect Awal
+| Public Routes
 |--------------------------------------------------------------------------
 */
+Route::redirect('/', '/blog');
 
-Route::get('/', function () {
-    return redirect()->route('login');
+Route::controller(HomeController::class)->group(function () {
+    Route::get('/blog', 'index')->name('blog');
+    Route::get('/artikel', 'artikel')->name('artikel');
+    Route::get('/artikel/{id}', 'show')->name('artikel.show');
+    Route::get('/kategori/{id}', 'kategori')->name('kategori');
+    Route::get('/search', 'search')->name('search');
+    Route::get('/about', 'about')->name('about');
+    Route::get('/contact', 'contact')->name('contact');
 });
 
+Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
 
 /*
 |--------------------------------------------------------------------------
-| AUTH (Guest Only)
+| Authentication Routes
 |--------------------------------------------------------------------------
 */
-
-Route::middleware('guest')->group(function(){
-
-    // LOGIN
-    Route::get('/login', [AuthController::class,'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class,'login']);
-
-    // REGISTER
-    Route::get('/register', [AuthController::class,'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class,'register']);
-
+Route::middleware('guest')->controller(AuthController::class)->group(function () {
+    Route::get('/login', 'showLogin')->name('login');
+    Route::post('/login', 'login')->name('login.process');
+    Route::get('/register', 'showRegister')->name('register');
+    Route::post('/register', 'register')->name('register.process');
 });
 
-
 /*
 |--------------------------------------------------------------------------
-| LOGOUT
+| Admin Area (Protected)
 |--------------------------------------------------------------------------
 */
+Route::middleware('auth')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::post('/logout', [AuthController::class,'logout'])->name('logout');
+    // Admin Resources
+    Route::resources([
+        'posts'      => PostController::class,
+        'categories' => CategoryController::class,
+    ]);
 
-
-/*
-|--------------------------------------------------------------------------
-| AREA LOGIN (ADMIN)
-|--------------------------------------------------------------------------
-*/
-
-Route::middleware(['auth'])->group(function(){
-
-    // DASHBOARD
-    Route::get('/dashboard', [DashboardController::class,'index'])->name('dashboard');
-
-    // POSTS
-    Route::resource('posts', PostController::class);
-
-    // CATEGORIES
-    Route::resource('categories', CategoryController::class);
-
-    // KOMENTAR (STORE SAJA)
-    Route::post('/comments', [CommentController::class,'store'])->name('comments.store');
-
+    // Logout (Disarankan menggunakan POST agar aman dari request manipulasi)
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +12,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * Field yang boleh diisi
+     * Field yang dapat diisi (Mass Assignment)
      */
     protected $fillable = [
         'name',
@@ -30,7 +29,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Casting data
+     * Casting atribut
      */
     protected function casts(): array
     {
@@ -41,10 +40,10 @@ class User extends Authenticatable
     }
 
     /**
-     * RELASI: User punya banyak Post
+     * Relasi User -> Banyak Post
      */
     public function posts(): HasMany
     {
-        return $this->hasMany(Post::class);
+        return $this->hasMany(Post::class, 'user_id');
     }
 }
