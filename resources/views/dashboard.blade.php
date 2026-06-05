@@ -9,7 +9,7 @@
         <h2 class="fw-bold" style="color: #362d35; letter-spacing: -1px;">
             Dashboard <span class="text-primary">Overview</span>
         </h2>
-        <p class="text-muted">Ringkasan performa dan aktivitas blog kamu.</p>
+        <p class="text-muted">performa dan aktivitas blog kamu.</p>
     </div>
 
     <div class="row">
